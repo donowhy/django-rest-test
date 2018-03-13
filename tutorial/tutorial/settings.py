@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
+import dj_database_url
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -40,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'oauth2_provider',
     'rest_framework',
+    'django_extensions',
     'snippets.apps.SnippetsConfig',
 ]
 
@@ -84,6 +86,10 @@ DATABASES = {
     }
 }
 
+# Update database configuration with $DATABASE_URL.
+db_from_env = dj_database_url.config(conn_max_age=500)
+DATABASES['default'].update(db_from_env)
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
@@ -95,6 +101,7 @@ STATICFILES_DIRS = (
     os.path.join(PROJECT_ROOT, 'static'),
 )
 
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 
 # Password validation
@@ -130,13 +137,25 @@ USE_L10N = True
 USE_TZ = True
 
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/1.8/howto/static-files/
+
+STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
 STATIC_URL = '/static/'
 
 # Extra places for collectstatic to find static files.
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
+    os.path.join(PROJECT_ROOT, 'static'),
 )
+
+
+LOGIN_URL          = '/'
+LOGIN_REDIRECT_URL = '/'
+LOGIN_ERROR_URL    = '/'
+
+# Simplified static file serving.
+# https://warehouse.python.org/project/whitenoise/
+STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
 OAUTH2_PROVIDER = {
     # this is the list of available scopes
